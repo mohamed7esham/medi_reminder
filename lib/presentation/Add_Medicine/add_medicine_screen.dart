@@ -14,29 +14,20 @@ class AddMedicineScreen extends StatefulWidget {
 }
 
 class _AddMedicineScreenState extends State<AddMedicineScreen> {
-  late MedicineCubit cubit;
-
+  // late MedicineCubit cubit;
   @override
   void initState() {
     super.initState();
 
-    cubit = context.read<MedicineCubit>();
-  }
-
-  @override
-  void dispose() {
-    cubit.nameController.dispose();
-    super.dispose();
+    context.read<MedicineCubit>().clearForm();
   }
 
   @override
   Widget build(BuildContext context) {
+    MedicineCubit cubit = context.read<MedicineCubit>();
     return Scaffold(
       appBar: AppBar(title: const Text("Add Medicine")),
-      body: BlocConsumer<MedicineCubit, MedicineState>(
-        listener: (context, state) {
-          // TODO: implement listener
-        },
+      body: BlocBuilder<MedicineCubit, MedicineState>(
         builder: (context, state) {
           return SingleChildScrollView(child: AddMedicineWidget(cubit: cubit));
         },

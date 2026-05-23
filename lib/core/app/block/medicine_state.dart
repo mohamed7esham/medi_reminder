@@ -27,3 +27,5 @@ class MedicineError extends MedicineState {
 class MedicineAdded extends MedicineState {}
 
 class MedicineFormUpdated extends MedicineState {}
+
+class StopAlarm extends MedicineState {}

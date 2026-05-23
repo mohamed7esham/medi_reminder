@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
-// import 'package:medi_reminder/model/medicine.dart';
 import 'package:medi_reminder/presentation/Add_Medicine/add_medicine_screen.dart';
 import 'package:medi_reminder/presentation/Home/home_body.dart';
-// import 'package:medi_reminder/presentation/Home/home_body_no_medicine_added.dart';
-// import 'package:medi_reminder/services/notification_service.dart';
-// import 'package:timezone/timezone.dart' as tz;
-
 import '../../core/utils/reusable_widgets/glass_bg.dart';
 import 'calender_line.dart';
 
@@ -54,13 +48,17 @@ class _HomescreenState extends State<Homescreen> {
                   },
 
                   builder: (context, state) {
-                    if (state is MedicineLoading) {
+                    final cubit = context.read<MedicineCubit>();
+                    if (state is MedicineLoading &&
+                        cubit.allMedicines.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    return HomeBody(
-                      medicines: state is MedicineLoaded ? state.medicines : [],
-                    );
+                    if (state is MedicineLoaded) {
+                      return HomeBody(medicines: state.medicines);
+                    }
+
+                    return HomeBody(medicines: cubit.allMedicines);
                   },
                 ),
               ),

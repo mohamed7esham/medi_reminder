@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/model/medicine.dart';
+import 'package:medi_reminder/services/alarm_service.dart';
 import 'package:medi_reminder/services/database_helper.dart';
-import 'package:medi_reminder/services/notification_service.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class MedicineCubit extends Cubit<MedicineState> {
   MedicineCubit() : super(MedicineInitial());
@@ -35,56 +36,6 @@ class MedicineCubit extends Cubit<MedicineState> {
         .toList();
 
     emit(MedicineLoaded(filtered));
-  }
-
-  // ================= ADD =================
-
-  Future<void> addMedicine({
-    required BuildContext context,
-    required String name,
-    required DateTime selectedDate,
-    required TimeOfDay selectedTime,
-    required bool repeatDaily,
-    String? imagePath,
-  }) async {
-    try {
-      emit(MedicineLoading());
-
-      final formattedDate = selectedDate.toIso8601String().split('T')[0];
-
-      final medicine = Medicine(
-        name: name.trim(),
-        date: formattedDate,
-        time: selectedTime.format(context),
-        repeatDaily: repeatDaily,
-        imagePath: imagePath,
-      );
-
-      final id = await DBHelper.insertMedicine(medicine);
-
-      final scheduledDateTime = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime.hour,
-        selectedTime.minute,
-      );
-
-      await NotificationService.scheduleNotification(
-        id: id,
-        title: "Medicine Reminder 💊",
-        body: "Take ${medicine.name}",
-        scheduledTime: tz.TZDateTime.from(scheduledDateTime, tz.local),
-        repeatDaily: repeatDaily,
-        imagePath: imagePath,
-      );
-
-      await loadMedicines();
-
-      emit(MedicineSuccess("Medicine Added"));
-    } catch (e) {
-      emit(MedicineError(e.toString()));
-    }
   }
 
   // ================= LOAD EDIT DATA =================
@@ -194,35 +145,37 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   String? imagePath;
 
+  @override
+  Future<void> close() {
+    nameController.dispose();
+    return super.close();
+  }
+
+  void clearForm() {
+    nameController.clear();
+
+    selectedDate = DateTime.now();
+
+    selectedTime = null;
+
+    repeatDaily = false;
+
+    imagePath = null;
+
+    emit(MedicineFormUpdated());
+  }
+
   //================= Save =================
   Future<void> saveMedicine(BuildContext context) async {
-    if (!formKey.currentState!.validate() || selectedTime == null) {
+    if (!formKey.currentState!.validate()) return;
+
+    if (selectedTime == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Please select time")));
       return;
     }
 
-    final formattedDate = selectedDate.toIso8601String().split('T')[0];
-
-    final medicine = Medicine(
-      name: nameController.text.trim(),
-      date: formattedDate,
-      time: selectedTime!.format(context),
-      repeatDaily: repeatDaily,
-      imagePath: imagePath,
-    );
-
-    await addMedicine(
-      context: context,
-      name: context.read<MedicineCubit>().nameController.text,
-      selectedDate: selectedDate,
-      selectedTime: selectedTime!,
-      repeatDaily: repeatDaily,
-      imagePath: imagePath,
-    );
-
-    // 🔔 Schedule Notification
     final scheduledDateTime = DateTime(
       selectedDate.year,
       selectedDate.month,
@@ -233,23 +186,44 @@ class MedicineCubit extends Cubit<MedicineState> {
 
     if (scheduledDateTime.isBefore(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please choose a future time")),
+        const SnackBar(content: Text("Please choose future time")),
       );
       return;
     }
-    debugPrint("📡 Calling scheduleNotification...");
-    NotificationService.scheduleNotification(
-      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title: "Medicine Reminder 💊",
-      body: "Take ${medicine.name}",
-      scheduledTime: tz.TZDateTime.from(scheduledDateTime, tz.local),
-      repeatDaily: repeatDaily,
-      imagePath: imagePath,
-    );
-    debugPrint("💊===========- SAVE BUTTON PRESSED");
-    debugPrint("📅=============- Selected Date: $selectedDate");
-    debugPrint("⏰=============- Selected Time: $selectedTime");
-    Navigator.pop(context);
+
+    try {
+      emit(MedicineLoading());
+
+      final medicine = Medicine(
+        name: nameController.text.trim(),
+        date: selectedDate.toIso8601String().split('T')[0],
+        time: selectedTime!.format(context),
+        repeatDaily: repeatDaily,
+        imagePath: imagePath,
+      );
+
+      final id = await DBHelper.insertMedicine(medicine);
+
+      await AlarmService.schedule(
+        id: id,
+        title: "Medicine Reminder 💊",
+        body: "Take ${medicine.name}",
+        dateTime: scheduledDateTime,
+      );
+
+      await loadMedicines();
+
+      emit(MedicineSuccess("Medicine Added"));
+
+      clearForm();
+
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      debugPrint("//////// SAVE ERROR: $e ////////////////");
+      emit(MedicineError(e.toString()));
+    }
   }
 
   //================= pickDate =================
@@ -338,46 +312,3 @@ class MedicineCubit extends Cubit<MedicineState> {
     return "Time: ${selectedTime!.format(context)}";
   }
 }
-
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:medi_reminder/model/medicine.dart';
-// import 'package:medi_reminder/services/database_helper.dart';
-
-// class MedicineCubit extends Cubit<List<Medicine>> {
-//   MedicineCubit() : super([]);
-
-//   List<Medicine> allMedicines = [];
-
-//   void loadMedicines() async {
-//     allMedicines = await DBHelper.getMedicines();
-//     emit(allMedicines);
-//   }
-
-//   void filterByDate(DateTime date) {
-//     final formatted = date.toIso8601String().split('T')[0];
-
-//     final filtered = allMedicines
-//         .where((m) => m.repeatDaily || m.date == formatted)
-//         .toList();
-//     emit(filtered);
-//   }
-
-//   Future<int> addMedicine(Medicine medicine) async {
-//     final id = await DBHelper.insertMedicine(medicine);
-
-//     loadMedicines();
-
-//     return id;
-//   }
-
-//   void deleteMedicine(int id) async {
-//     await DBHelper.deleteMedicine(id);
-//     loadMedicines();
-//   }
-
-//   // ✏️ Update medicine
-//   void updateMedicine(Medicine medicine) async {
-//     await DBHelper.updateMedicine(medicine);
-//     loadMedicines();
-//   }
-// }

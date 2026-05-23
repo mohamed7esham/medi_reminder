@@ -8,7 +8,8 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <application
         android:label="medi_reminder"
         android:name="${applicationName}"
@@ -30,8 +31,11 @@
         
         <activity
             android:name=".MainActivity"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:excludeFromRecents="False"
+            android:launchMode="singleTask"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
