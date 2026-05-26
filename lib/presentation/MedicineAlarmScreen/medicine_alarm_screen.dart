@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/presentation/MedicineAlarmScreen/alarm_screen_widget.dart';
 import 'package:medi_reminder/services/audio_service.dart';
 import 'package:medi_reminder/services/vibration_service.dart';
@@ -95,7 +96,7 @@ class _MedicineAlarmScreenState extends State<MedicineAlarmScreen>
 
                 body: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(AppSize.s20),
 
                     child: SingleChildScrollView(
                       child: AlarmScreenWidget(

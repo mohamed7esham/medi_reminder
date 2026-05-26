@@ -4,6 +4,7 @@ import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
 import 'package:medi_reminder/presentation/Add_Medicine/add_medicine_screen.dart';
 import 'package:medi_reminder/presentation/Home/home_body.dart';
+import 'package:medi_reminder/presentation/Home/home_body_no_medicine_added.dart';
 import '../../core/utils/reusable_widgets/glass_bg.dart';
 import 'calender_line.dart';
 
@@ -49,16 +50,24 @@ class _HomescreenState extends State<Homescreen> {
 
                   builder: (context, state) {
                     final cubit = context.read<MedicineCubit>();
+                    // LOADING
                     if (state is MedicineLoading &&
                         cubit.allMedicines.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    if (state is MedicineLoaded) {
-                      return HomeBody(medicines: state.medicines);
+                    // GET CURRENT LIST
+                    final medicines = state is MedicineLoaded
+                        ? state.medicines
+                        : cubit.filteredMedicines;
+
+                    // EMPTY
+                    if (medicines.isEmpty) {
+                      return const NoMedcinesInHomeScreenn();
                     }
 
-                    return HomeBody(medicines: cubit.allMedicines);
+                    // DATA
+                    return HomeBody(medicines: medicines);
                   },
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/presentation/Add_Medicine/add_medicine_screen.dart';
 
 class NoMedcinesInHomeScreenn extends StatelessWidget {
@@ -8,9 +9,12 @@ class NoMedcinesInHomeScreenn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 40),
-        const Text("No medicines added yet 💊", style: TextStyle(fontSize: 18)),
-        const SizedBox(height: 20),
+        SizedBox(height: AppHeight.h40),
+        Text(
+          "No medicines added yet 💊",
+          style: TextStyle(fontSize: AppSize.s18),
+        ),
+        SizedBox(height: AppHeight.h20),
         ElevatedButton(
           onPressed: () {
             Navigator.push(

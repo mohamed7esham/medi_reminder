@@ -3,6 +3,7 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/core/app/block/cubit.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 
 class CalenderLine extends StatefulWidget {
   const CalenderLine({super.key});
@@ -17,7 +18,7 @@ class _CalenderLineState extends State<CalenderLine> {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(
-        30,
+        AppSize.s30,
       ), // smooth corners for the glass area
       child: Stack(
         alignment: Alignment.center,
@@ -26,11 +27,11 @@ class _CalenderLineState extends State<CalenderLine> {
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40), // stronger blur
             child: Container(
-              height: 220,
+              height: AppHeight.h220,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.35), // close to white
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(AppSize.s30),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.5),
                   width: 1.2,
@@ -41,7 +42,7 @@ class _CalenderLineState extends State<CalenderLine> {
 
           // 🗓️ Your horizontal calendar
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: EdgeInsets.symmetric(vertical: AppHeight.h20),
             child: ClipRRect(
               clipBehavior: Clip.none,
               child: EasyDateTimeLine(
@@ -62,7 +63,9 @@ class _CalenderLineState extends State<CalenderLine> {
                   activeDayStyle: DayStyle(
                     borderRadius: 32,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(AppSize.s32),
+                      ),
                       border: Border.all(color: Colors.white),
 
                       gradient: LinearGradient(
@@ -73,9 +76,9 @@ class _CalenderLineState extends State<CalenderLine> {
                     ),
                   ),
                   inactiveDayStyle: DayStyle(
-                    borderRadius: 32,
+                    borderRadius: AppSize.s32,
                     dayNumStyle: TextStyle(
-                      fontSize: 28,
+                      fontSize: FontSize.s28,
                       fontWeight:
                           FontWeight.w800, // text color for inactive date
                     ),
@@ -84,13 +87,15 @@ class _CalenderLineState extends State<CalenderLine> {
                       color: Color(
                         0xfff2f2f7,
                       ), // background color for inactive date
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(AppSize.s32),
+                      ),
                     ),
                   ),
                 ),
-                timeLineProps: const EasyTimeLineProps(
-                  hPadding: 16.0,
-                  separatorPadding: 16.0,
+                timeLineProps: EasyTimeLineProps(
+                  hPadding: AppWidth.w16,
+                  separatorPadding: AppWidth.w16,
                 ),
               ),
             ),

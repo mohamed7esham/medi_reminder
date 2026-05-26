@@ -114,6 +114,25 @@ class DBHelper {
     );
   }
 
+  // ==========Get a single medicine by its ID=========================
+  static Future<Medicine?> getMedicineById(int id) async {
+    final dbClient = await db;
+
+    final result = await dbClient.query(
+      'medicines',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (result.isNotEmpty) {
+      return Medicine.fromMap(result.first);
+    }
+
+    return null;
+  }
+
+  // =========================insertDoseHistory and getDoseHistory=================
   static Future insertDoseHistory(DoseHistory dose) async {
     final dbClient = await db;
 

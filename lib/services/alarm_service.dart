@@ -2,6 +2,7 @@ import 'package:alarm/alarm.dart';
 // import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:medi_reminder/presentation/MedicineAlarmScreen/medicine_alarm_screen.dart';
+import 'package:medi_reminder/services/database_helper.dart';
 import 'package:medi_reminder/services/navigator_key.dart';
 
 class AlarmService {
@@ -15,14 +16,24 @@ class AlarmService {
     if (_initialized) return;
     _initialized = true;
 
-    Alarm.ringing.listen((alarmSet) {
+    Alarm.ringing.listen((alarmSet) async {
       if (_isAlarmOpen) return;
       if (navigatorKey.currentState == null) return;
       if (alarmSet.alarms.isEmpty) return;
 
       final alarm = alarmSet.alarms.first;
+      final medicine = await DBHelper.getMedicineById(alarm.id);
 
       _isAlarmOpen = true;
+
+      if (medicine != null && medicine.repeatDaily) {
+        await AlarmService.scheduleNextDay(
+          id: alarm.id,
+          title: alarm.notificationSettings.title,
+          body: alarm.notificationSettings.body,
+          currentDate: alarm.dateTime,
+        );
+      }
 
       navigatorKey.currentState!.push(
         MaterialPageRoute(
@@ -33,11 +44,36 @@ class AlarmService {
 
             onTaken: () async {
               await Alarm.stop(alarm.id);
+              // CREATE NEXT DAY
+              final medicine = await DBHelper.getMedicineById(alarm.id);
+
+              if (medicine != null && medicine.repeatDaily) {
+                final nextDay = alarm.dateTime.add(const Duration(days: 1));
+                await AlarmService.schedule(
+                  id: alarm.id,
+                  title: alarm.notificationSettings.title,
+                  body: alarm.notificationSettings.body,
+                  dateTime: nextDay,
+                  repeatDaily: true,
+                );
+              }
               _close();
             },
 
             onSkip: () async {
               await Alarm.stop(alarm.id);
+              final medicine = await DBHelper.getMedicineById(alarm.id);
+
+              if (medicine != null && medicine.repeatDaily) {
+                final nextDay = alarm.dateTime.add(const Duration(days: 1));
+                await AlarmService.schedule(
+                  id: alarm.id,
+                  title: alarm.notificationSettings.title,
+                  body: alarm.notificationSettings.body,
+                  dateTime: nextDay,
+                  repeatDaily: true,
+                );
+              }
               _close();
             },
           ),
@@ -65,29 +101,64 @@ class AlarmService {
     bool repeatDaily = false,
     String? imagePath,
   }) async {
-    final alarmSettings = AlarmSettings(
-      id: id,
-      dateTime: dateTime,
+    // 🔥 ALWAYS REMOVE OLD ALARM FIRST
+    await Alarm.stop(id);
+    try {
+      final alarmSettings = AlarmSettings(
+        id: id,
+        dateTime: dateTime,
 
-      assetAudioPath: 'assets/sounds/alarm.mp3',
+        assetAudioPath: 'assets/sounds/alarm.mp3',
 
-      loopAudio: true,
-      vibrate: true,
+        loopAudio: true,
+        vibrate: true,
 
-      androidFullScreenIntent: true,
-      warningNotificationOnKill: true,
-      androidStopAlarmOnTermination: false,
-      allowAlarmOverlap: false,
+        androidFullScreenIntent: true,
+        warningNotificationOnKill: true,
+        androidStopAlarmOnTermination: false,
+        allowAlarmOverlap: false,
 
-      notificationSettings: NotificationSettings(
-        title: title,
-        body: body,
-        stopButton: "Stop",
-        icon: "notification_icon",
-      ),
-      volumeSettings: VolumeSettings.fixed(volume: 1.0),
+        notificationSettings: NotificationSettings(
+          title: title,
+          body: body,
+          stopButton: "Stop",
+          icon: "notification_icon",
+        ),
+        volumeSettings: VolumeSettings.fixed(volume: 1.0),
+      );
+
+      await Alarm.set(alarmSettings: alarmSettings);
+
+      final alarms = await Alarm.getAlarms();
+
+      debugPrint("TOTAL ALARMS: ${alarms.length}");
+      debugPrint(
+        "✅ Alarm Scheduled: $title at $dateTime | Repeat Daily: $repeatDaily",
+      );
+
+      for (final alarm in alarms) {
+        debugPrint("⏰ Alarm ID: ${alarm.id} | Time: ${alarm.dateTime}");
+      }
+    } catch (e) {
+      debugPrint("❌ Failed to schedule alarm: $e");
+    }
+  }
+
+  // =========================scheduleNextDay=========================
+  static Future<void> scheduleNextDay({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime currentDate,
+  }) async {
+    final nextDay = currentDate.add(const Duration(days: 1));
+
+    await schedule(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: title,
+      body: body,
+      dateTime: nextDay,
+      repeatDaily: true,
     );
-
-    await Alarm.set(alarmSettings: alarmSettings);
   }
 }

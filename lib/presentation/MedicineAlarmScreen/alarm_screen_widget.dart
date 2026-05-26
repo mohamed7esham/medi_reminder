@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/services/audio_service.dart';
 import 'package:medi_reminder/services/vibration_service.dart';
 
@@ -32,7 +33,7 @@ class AlarmScreenWidget extends StatelessWidget {
           scale: 1 + (controllerValue * 0.2),
 
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(AppSize.s24),
 
             decoration: BoxDecoration(
               color: Colors.red.shade100,
@@ -46,38 +47,41 @@ class AlarmScreenWidget extends StatelessWidget {
               ],
             ),
 
-            child: const Icon(Icons.alarm, size: 90, color: Colors.red),
+            child: Icon(Icons.alarm, size: AppSize.s90, color: Colors.red),
           ),
         ),
 
-        const SizedBox(height: 35),
+        SizedBox(height: AppHeight.h35),
 
         // 💊 Title
-        const Text(
+        Text(
           "Medicine Time!",
-          style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: FontSize.s34, fontWeight: FontWeight.bold),
         ),
 
-        const SizedBox(height: 10),
+        SizedBox(height: AppHeight.h10),
 
         // 💊 Medicine Name
         Text(
           medicineName,
           textAlign: TextAlign.center,
 
-          style: const TextStyle(
-            fontSize: 30,
+          style: TextStyle(
+            fontSize: FontSize.s30,
             fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
         ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: AppHeight.h12),
 
         // ⏰ Time
-        Text(time, style: TextStyle(fontSize: 22, color: Colors.grey.shade700)),
+        Text(
+          time,
+          style: TextStyle(fontSize: FontSize.s22, color: Colors.grey.shade700),
+        ),
 
-        const SizedBox(height: 35),
+        SizedBox(height: AppHeight.h35),
 
         // 🖼 Medicine Image
         if (imagePath != null)
@@ -85,23 +89,23 @@ class AlarmScreenWidget extends StatelessWidget {
             tag: imagePath!,
 
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(AppSize.s24),
 
               child: Image.file(
                 File(imagePath!),
-                height: 240,
+                height: AppHeight.h240,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
           ),
 
-        const SizedBox(height: 45),
+        SizedBox(height: AppHeight.h45),
 
         // ✅ TAKE BUTTON
         SizedBox(
           width: double.infinity,
-          height: 65,
+          height: AppHeight.h65,
 
           child: ElevatedButton.icon(
             onPressed: () async {
@@ -112,25 +116,25 @@ class AlarmScreenWidget extends StatelessWidget {
 
             icon: const Icon(Icons.check_circle),
 
-            label: const Text("I Took It", style: TextStyle(fontSize: 22)),
+            label: Text("I Took It", style: TextStyle(fontSize: FontSize.s22)),
 
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
 
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(AppSize.s18),
               ),
             ),
           ),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: AppHeight.h16),
 
         // 😴 SNOOZE BUTTON
         SizedBox(
           width: double.infinity,
-          height: 65,
+          height: AppHeight.h65,
 
           child: ElevatedButton.icon(
             onPressed: () async {
@@ -144,25 +148,28 @@ class AlarmScreenWidget extends StatelessWidget {
 
             icon: const Icon(Icons.snooze),
 
-            label: const Text("Snooze 5 Min", style: TextStyle(fontSize: 22)),
+            label: Text(
+              "Snooze 5 Min",
+              style: TextStyle(fontSize: FontSize.s22),
+            ),
 
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
 
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(AppSize.s18),
               ),
             ),
           ),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: AppHeight.h16),
 
         // ❌ SKIP BUTTON
         SizedBox(
           width: double.infinity,
-          height: 65,
+          height: AppHeight.h65,
 
           child: OutlinedButton.icon(
             onPressed: () async {
@@ -174,14 +181,14 @@ class AlarmScreenWidget extends StatelessWidget {
 
             icon: const Icon(Icons.close),
 
-            label: const Text("Skip", style: TextStyle(fontSize: 22)),
+            label: Text("Skip", style: TextStyle(fontSize: FontSize.s22)),
 
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
-              side: const BorderSide(color: Colors.red, width: 2),
+              side: BorderSide(color: Colors.red, width: AppWidth.w2),
 
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(AppSize.s18),
               ),
             ),
           ),

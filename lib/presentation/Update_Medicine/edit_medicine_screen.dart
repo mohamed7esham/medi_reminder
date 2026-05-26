@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/model/medicine.dart';
 import 'package:medi_reminder/presentation/Update_Medicine/edit_screen_widget.dart';
 
@@ -30,7 +31,7 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
       body: BlocBuilder<MedicineCubit, MedicineState>(
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(AppSize.s16),
             child: Form(
               key: cubit.formKey,
               child: EditScreenWidget(cubit: cubit, medicine: widget.medicine),

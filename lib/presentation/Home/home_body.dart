@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
+import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/model/medicine.dart';
 import 'package:medi_reminder/presentation/Update_Medicine/edit_medicine_screen.dart';
 
@@ -23,7 +24,10 @@ class HomeBody extends StatelessWidget {
             final medicine = medicines[index];
 
             return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: EdgeInsets.symmetric(
+                horizontal: AppWidth.w16,
+                vertical: AppHeight.h8,
+              ),
 
               child: ListTile(
                 onTap: () {
@@ -37,11 +41,11 @@ class HomeBody extends StatelessWidget {
                 leading:
                     medicine.imagePath != null && medicine.imagePath!.isNotEmpty
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppSize.s8),
                         child: Image.file(
                           File(medicine.imagePath!),
-                          width: 40,
-                          height: 40,
+                          width: AppWidth.w40,
+                          height: AppHeight.h40,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) {
                             return const Icon(

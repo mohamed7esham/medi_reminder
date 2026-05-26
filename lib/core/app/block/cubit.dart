@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medi_reminder/model/medicine.dart';
@@ -19,23 +20,26 @@ class MedicineCubit extends Cubit<MedicineState> {
 
     try {
       allMedicines = await DBHelper.getMedicines();
-
-      emit(MedicineLoaded(allMedicines));
+      // ✅ KEEP CURRENT FILTER
+      filterByDate(currentSelectedDate);
+      // emit(MedicineLoaded(allMedicines));
     } catch (e) {
       emit(MedicineError(e.toString()));
     }
   }
 
   // ================= FILTER =================
-
+  DateTime currentSelectedDate = DateTime.now();
+  List<Medicine> filteredMedicines = [];
   void filterByDate(DateTime date) {
+    currentSelectedDate = date;
     final formatted = date.toIso8601String().split('T')[0];
 
-    final filtered = allMedicines
-        .where((m) => m.repeatDaily || m.date == formatted)
-        .toList();
+    filteredMedicines = allMedicines.where((medicine) {
+      return medicine.repeatDaily || medicine.date == formatted;
+    }).toList();
 
-    emit(MedicineLoaded(filtered));
+    emit(MedicineLoaded(filteredMedicines));
   }
 
   // ================= LOAD EDIT DATA =================
@@ -110,7 +114,30 @@ class MedicineCubit extends Cubit<MedicineState> {
         imagePath: imagePath,
       );
 
+      // ✅ Update DB
       await DBHelper.updateMedicine(updatedMedicine);
+
+      // ✅ IMPORTANT:
+      // remove old alarm first
+      await Alarm.stop(medicineId);
+
+      final scheduledDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+
+      // ✅ Schedule new updated alarm
+      await AlarmService.schedule(
+        id: medicineId,
+        title: "Medicine Reminder 💊",
+        body: "Take ${updatedMedicine.name}",
+        dateTime: scheduledDateTime,
+        repeatDaily: repeatDaily,
+        imagePath: imagePath,
+      );
 
       await loadMedicines();
 
@@ -154,7 +181,7 @@ class MedicineCubit extends Cubit<MedicineState> {
   void clearForm() {
     nameController.clear();
 
-    selectedDate = DateTime.now();
+    selectedDate = currentSelectedDate;
 
     selectedTime = null;
 
@@ -175,6 +202,12 @@ class MedicineCubit extends Cubit<MedicineState> {
       ).showSnackBar(const SnackBar(content: Text("Please select time")));
       return;
     }
+
+    debugPrint("========== SAVE ==========");
+    debugPrint("NAME: ${nameController.text}");
+    debugPrint("REPEAT: $repeatDaily");
+    debugPrint("DATE: $selectedDate");
+    debugPrint("TIME: $selectedTime");
 
     final scheduledDateTime = DateTime(
       selectedDate.year,
