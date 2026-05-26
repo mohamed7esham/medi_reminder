@@ -119,15 +119,38 @@ class MedicineCubit extends Cubit<MedicineState> {
 
       // ✅ IMPORTANT:
       // remove old alarm first
-      await Alarm.stop(medicineId);
+      final alarms = await Alarm.getAlarms();
 
-      final scheduledDateTime = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime!.hour,
-        selectedTime!.minute,
-      );
+      if (alarms.any((a) => a.id == medicineId)) {
+        await Alarm.stop(medicineId);
+      }
+
+      DateTime scheduledDateTime;
+
+      if (repeatDaily) {
+        final now = DateTime.now();
+
+        scheduledDateTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          selectedTime!.hour,
+          selectedTime!.minute,
+        );
+
+        // if today's time already passed → tomorrow
+        if (scheduledDateTime.isBefore(now)) {
+          scheduledDateTime = scheduledDateTime.add(const Duration(days: 1));
+        }
+      } else {
+        scheduledDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime!.hour,
+          selectedTime!.minute,
+        );
+      }
 
       // ✅ Schedule new updated alarm
       await AlarmService.schedule(
@@ -209,13 +232,32 @@ class MedicineCubit extends Cubit<MedicineState> {
     debugPrint("DATE: $selectedDate");
     debugPrint("TIME: $selectedTime");
 
-    final scheduledDateTime = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      selectedTime!.hour,
-      selectedTime!.minute,
-    );
+    DateTime scheduledDateTime;
+
+    if (repeatDaily) {
+      final now = DateTime.now();
+
+      scheduledDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+
+      // if today's time already passed → tomorrow
+      if (scheduledDateTime.isBefore(now)) {
+        scheduledDateTime = scheduledDateTime.add(const Duration(days: 1));
+      }
+    } else {
+      scheduledDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+    }
 
     if (scheduledDateTime.isBefore(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(

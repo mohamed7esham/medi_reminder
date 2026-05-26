@@ -96,7 +96,7 @@ class EditScreenWidget extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                cubit.updateMedicineData(
+                await cubit.updateMedicineData(
                   context: context,
                   medicineId: medicine.id!,
                 );
