@@ -67,6 +67,7 @@ class DBHelper {
   static Future<void> deleteMedicine(int id) async {
     final dbClient = await db;
     await dbClient.delete('medicines', where: 'id=?', whereArgs: [id]);
+    debugPrint("🗑️ Medicine with ID $id deleted");
   }
 
   // ✏️ Update medicine
@@ -80,7 +81,7 @@ class DBHelper {
       whereArgs: [medicine.id],
     );
 
-    debugPrint("✏️ Medicine updated");
+    debugPrint("✏️ Medicine with ID ${medicine.id} updated");
   }
 
   // For testing purposes only print all medicines in the database

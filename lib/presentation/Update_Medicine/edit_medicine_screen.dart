@@ -19,7 +19,7 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<MedicineCubit>().loadMedicineForEdit(context, widget.medicine);
+    context.read<MedicineCubit>().loadMedicineForEdit(widget.medicine);
   }
 
   @override

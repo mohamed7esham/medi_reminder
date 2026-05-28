@@ -18,7 +18,7 @@ class TimezoneService {
     } catch (e) {
       debugPrint("❌ Timezone error: $e");
 
-      tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
+      tz.setLocalLocation(tz.local);
     }
   }
 

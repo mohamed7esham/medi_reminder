@@ -48,7 +48,7 @@ class EditScreenWidget extends StatelessWidget {
               "Date: ${cubit.selectedDate.toLocal().toString().split(' ')[0]}",
             ),
             trailing: const Icon(Icons.calendar_today),
-            onTap: () => cubit.pickEditDate(context),
+            onTap: () => cubit.pickDate(context),
           ),
 
           SizedBox(height: AppHeight.h12),
@@ -65,7 +65,7 @@ class EditScreenWidget extends StatelessWidget {
                   : "Time: ${cubit.selectedTime!.format(context)}",
             ),
             trailing: const Icon(Icons.access_time),
-            onTap: () => cubit.pickEditTime(context),
+            onTap: () => cubit.pickTime(context),
           ),
 
           SizedBox(height: AppHeight.h12),
@@ -96,13 +96,8 @@ class EditScreenWidget extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                await cubit.updateMedicineData(
-                  context: context,
-                  medicineId: medicine.id!,
-                );
-                if (!context.mounted) return;
+                await cubit.updateMedicine(context, medicine.id!);
 
-                Navigator.pop(context);
                 DBHelper.printAllMedicines();
                 // DBHelper.clearDatabase(); //clear database for testing
               },

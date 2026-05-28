@@ -9,9 +9,8 @@ class AppInitializer {
     WidgetsFlutterBinding.ensureInitialized();
     await TimezoneService.init();
     await Permission.notification.request();
-
     await Alarm.init();
-
     AlarmService.initListener();
+    debugPrint("=================App Initialized=================");
   }
 }

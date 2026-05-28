@@ -7,10 +7,10 @@ import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/model/medicine.dart';
 import 'package:medi_reminder/presentation/Update_Medicine/edit_medicine_screen.dart';
 
-class HomeBody extends StatelessWidget {
+class MediCardList extends StatelessWidget {
   final List<Medicine> medicines;
 
-  const HomeBody({super.key, required this.medicines});
+  const MediCardList({super.key, required this.medicines});
 
   @override
   Widget build(BuildContext context) {
