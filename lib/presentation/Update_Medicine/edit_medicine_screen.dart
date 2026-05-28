@@ -4,7 +4,7 @@ import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/app/block/medicine_state.dart';
 import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/model/medicine.dart';
-import 'package:medi_reminder/presentation/Update_Medicine/edit_screen_widget.dart';
+import 'package:medi_reminder/presentation/Update_Medicine/edit_screen_body.dart';
 
 class EditMedicineScreen extends StatefulWidget {
   const EditMedicineScreen({super.key, required this.medicine});
@@ -34,7 +34,7 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
             padding: EdgeInsets.all(AppSize.s16),
             child: Form(
               key: cubit.formKey,
-              child: EditScreenWidget(cubit: cubit, medicine: widget.medicine),
+              child: EditScreenBody(cubit: cubit, medicine: widget.medicine),
             ),
           );
         },

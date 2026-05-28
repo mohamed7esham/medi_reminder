@@ -3,10 +3,10 @@ import 'package:medi_reminder/core/app/block/cubit.dart';
 import 'package:medi_reminder/core/utils/app_values.dart';
 import 'package:medi_reminder/core/utils/reusable_widgets/image_picker.dart';
 import 'package:medi_reminder/presentation/Add_Medicine/Widgets/add_medi_button.dart';
-import 'package:medi_reminder/presentation/Add_Medicine/Widgets/check_box_every_day.dart';
-import 'package:medi_reminder/presentation/Add_Medicine/Widgets/date_picker.dart';
-import 'package:medi_reminder/presentation/Add_Medicine/Widgets/field_medi_name.dart';
-import 'package:medi_reminder/presentation/Add_Medicine/Widgets/time_picker.dart';
+import 'package:medi_reminder/core/utils/reusable_widgets/check_box_every_day.dart';
+import 'package:medi_reminder/core/utils/reusable_widgets/date_picker.dart';
+import 'package:medi_reminder/core/utils/reusable_widgets/field_medi_name.dart';
+import 'package:medi_reminder/core/utils/reusable_widgets/time_picker.dart';
 
 class AddMedicineWidget extends StatelessWidget {
   const AddMedicineWidget({super.key, required this.cubit});
